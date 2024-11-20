@@ -1,19 +1,19 @@
 import { Repository } from "typeorm";
-import { PrivateMessage } from "../../entities/PrivateMessage";
+import { PrivateMessages } from "../../entities/PrivateMessages";
 import { AppDataSource } from "../../data-source";
 
 export class PrivateMessageRepository {
-  private messageRepository: Repository<PrivateMessage>;
+  private messageRepository: Repository<PrivateMessages>;
 
   constructor() {
-    this.messageRepository = AppDataSource.getRepository(PrivateMessage);
+    this.messageRepository = AppDataSource.getRepository(PrivateMessages);
   }
 
-  async save(message: PrivateMessage): Promise<PrivateMessage> {
+  async save(message: PrivateMessages): Promise<PrivateMessages> {
     return await this.messageRepository.save(message);
   }
 
-  async getConversation(userId1: number, userId2: number): Promise<PrivateMessage[]> {
+  async getConversation(userId1: number, userId2: number): Promise<PrivateMessages[]> {
     return await this.messageRepository.find({
       where: [
         { sender: { id: userId1 }, receiver: { id: userId2 } },

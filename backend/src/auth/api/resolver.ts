@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { RegisterDTO, LoginDTO, AuthResponse } from "./domain";
 import { UserRepository } from "../repository/repositoryPostgreSQL";
-import { User } from "../../entities/User";
+import { User } from "../../entities/Users";
 import { comparePasswords, hashPassword } from "../../utils/hash";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";

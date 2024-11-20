@@ -1,6 +1,6 @@
 import { SendPrivateMessageDTO, PrivateMessageResponse } from "./domain";
 import { PrivateMessageRepository } from "../repository/repositoryPostgresql";
-import { PrivateMessage } from "../../entities/PrivateMessage";
+import { PrivateMessages } from "../../entities/PrivateMessages";
 
 export class PrivateMessageService {
   constructor(private readonly privateMessageRepository: PrivateMessageRepository) {}
@@ -8,8 +8,8 @@ export class PrivateMessageService {
   async sendPrivateMessage(data: SendPrivateMessageDTO): Promise<PrivateMessageResponse> {
     const { senderId, receiverId, content } = data;
 
-    // Créer et sauvegarder le message privé
-    const newMessage = new PrivateMessage();
+    // Create and save the new message
+    const newMessage = new PrivateMessages();
     newMessage.sender = { id: senderId } as any;
     newMessage.receiver = { id: receiverId } as any;
     newMessage.content = content;
