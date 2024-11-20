@@ -4,7 +4,7 @@ import { createServer } from 'http';
 import "reflect-metadata";
 import { Server } from "socket.io";
 import authRoutes from './auth/routes/routesPost';
-import routerChannel from './channel/routes/routesPost';
+import routerChannel from './setup/routes/routesPost';
 import { AppDataSource } from './data-source';
 import { swagger } from './documentation';
 import routerMessage from './message/routes/routes';
