@@ -39,6 +39,15 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+  
+  frontend:
+    container_name: my_frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:3000"
 
 volumes:
   postgres_data:
