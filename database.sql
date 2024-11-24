@@ -14,7 +14,6 @@ CREATE TABLE users (
     last_name VARCHAR(50) NOT NULL,
     display_name VARCHAR(50) NOT NULL,
     racing_number INT,
-    team_id INT REFERENCES teams(id) ON DELETE SET NULL,
     profile_picture_path TEXT,
     banner_picture_path TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -23,8 +22,32 @@ CREATE TABLE users (
 -- Teams table
 CREATE TABLE teams (
     id SERIAL PRIMARY KEY,
+    owner_id INT REFERENCES users(id) ON DELETE SET NULL,
     name VARCHAR(50) NOT NULL,
     description TEXT,
+    members INT[] DEFAULT ARRAY[]::INT[],
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Base vehicles table
+CREATE TABLE vehicles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    type vehicle_type,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Setups table
+-- Create a new setup: INSERT INTO setups (vehicle_id, user_id, name, description, track) VALUES (1, 2, 'Kart Setup for Rain', 'Optimized setup for wet conditions', 'Silverstone');
+-- Update a setup: UPDATE setups SET name = 'Kart Setup for Rainy Conditions' WHERE id = 1;
+CREATE TABLE setups (
+    id SERIAL PRIMARY KEY,
+    vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
+    user_id INT REFERENCES users(id) ON DELETE SET NULL,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    track TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -83,15 +106,6 @@ CREATE TABLE message_images (
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Base vehicles table
-CREATE TABLE vehicles (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    type vehicle_type NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Saved vehicles (user-specific instances)
 CREATE TABLE saved_vehicles (
     id SERIAL PRIMARY KEY,
@@ -111,20 +125,7 @@ CREATE TABLE setup_parameters (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    applicable_to vehicle_type[] NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Setups table
--- Create a new setup: INSERT INTO setups (vehicle_id, user_id, name, description, track) VALUES (1, 2, 'Kart Setup for Rain', 'Optimized setup for wet conditions', 'Silverstone');
--- Update a setup: UPDATE setups SET name = 'Kart Setup for Rainy Conditions' WHERE id = 1;
-CREATE TABLE setups (
-    id SERIAL PRIMARY KEY,
-    vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
-    user_id INT REFERENCES users(id) ON DELETE SET NULL,
-    name VARCHAR(50) NOT NULL,
-    description TEXT,
-    track TEXT,
+    applicable_to vehicle_type[], -- if empty or null, applicable to all vehicle types
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -139,7 +140,6 @@ CREATE TABLE setup_values (
 );
 
 -- Indexes for Performance
-CREATE INDEX idx_users_team_id ON users(team_id);
 CREATE INDEX idx_posts_user_id ON posts(user_id);
 CREATE INDEX idx_saved_vehicles_owner_id ON saved_vehicles(owner_id);
 CREATE INDEX idx_setups_vehicle_id ON setups(vehicle_id);

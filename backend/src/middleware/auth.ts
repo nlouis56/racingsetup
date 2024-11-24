@@ -8,13 +8,13 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ message: "Token manquant" });
+    res.status(401).json({ message: "Missing token" });
     return;
   }
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
-      res.status(403).json({ message: "Token invalide" });
+      res.status(403).json({ message: "Invalid token" });
       return;
     }
 

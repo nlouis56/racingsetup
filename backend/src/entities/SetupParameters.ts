@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { VehicleType } from './CustomTypes';
+import { VehicleType } from './VehicleType';
 
 @Entity('setup_parameters')
 export class SetupParameters {
@@ -12,7 +12,12 @@ export class SetupParameters {
     @Column({ type: 'text', nullable: true })
     description: string;
 
-    @Column({ type: 'enum', enum: VehicleType, array: true })
+    @Column({
+        type: 'enum',
+        enum: VehicleType,
+        enumName: 'vehicle_type',
+        array: true,
+    })
     applicableTo: VehicleType[];
 
     @CreateDateColumn()

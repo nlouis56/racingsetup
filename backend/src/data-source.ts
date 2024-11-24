@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Users, UserAuth, Posts, Setups, Teams, PublicMessages, PublicMessageReplies, PrivateMessages, SavedVehicles, SetupParameters, SetupValues, Vehicles } from "./entities";
+import { VehicleType, AuthType, Users, UserAuth, Posts, Setups, Teams, PublicMessages, PublicMessageReplies, PrivateMessages, SavedVehicles, SetupParameters, SetupValues, Vehicles } from "./entities";
 
 
 export const AppDataSource = new DataSource({
@@ -10,11 +10,12 @@ export const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    synchronize: true,
+    synchronize: false,
     logging: false,
     entities: [
         Users,
         UserAuth,
+        AuthType,
         Posts,
         Setups,
         Teams,

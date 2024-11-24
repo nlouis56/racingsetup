@@ -7,11 +7,8 @@ import authRoutes from './auth/routes/routesPost';
 import routerChannel from './setup/routes/routesPost';
 import { AppDataSource } from './data-source';
 import { swagger } from './documentation';
-import routerMessage from './message/routes/routes';
-import { setupSocket } from './message/websocket';
-import { setupNotificationSocket } from './notification/websocket';
 import privateMessageRouter from './privateMessage/routes/routes';
-import { ChannelMessageNotification, PrivateMessageNotification } from './notification/api/domain';
+import userRoutes from './user/routes/routes';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -40,12 +37,12 @@ app.use('/docs', swagger.serve, swagger.setup)
 // Setup routes
 app.use('/api/auth', authRoutes);
 app.use("/api/channel", routerChannel);
-app.use("/api/message", routerMessage);
+app.use('/api/user', userRoutes);
 app.use('/api/privateMessage', privateMessageRouter);
 
 AppDataSource.initialize().then(() => {
   // Configure Socket.io pour la messagerie et les notifications en temps réel
-  const notificationService = setupNotificationSocket(io);
+  /* const notificationService = setupNotificationSocket(io);
   setupSocket(io);
 
   // Démarre le serveur
@@ -72,6 +69,6 @@ AppDataSource.initialize().then(() => {
       timestamp: new Date(),
     };
     notificationService.sendChannelMessageNotification(notification);
-  });
+  }); */
 
 }).catch((error) => console.error('Error initializing data source:', error));

@@ -1,4 +1,5 @@
-export * from './CustomTypes';
+export * from './AuthType';
+export * from './VehicleType';
 export * from './Setups';
 export * from './SetupParameters';
 export * from './SetupValues';
