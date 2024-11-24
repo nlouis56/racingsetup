@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}" # Expose backend port
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+      - BACKEND_PORT=${BACKEND_PORT}
+    volumes:
+      - ./backend:/app  # Mount source code for live updates
+    depends_on:
+      db:
+        condition: service_started
+    networks:
+      - network_back
+
+  db:
+    image: postgres:16
+    container_name: my_postgres_db_dev
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${DATABASE_PORT}:5432" # Expose database port
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - network_back
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+
+networks:
+  network_back:
