@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
 import { Users } from './Users';
-import { AuthType, AuthEnumType } from './AuthType';
+import { AuthEnumType } from './AuthType';
 
 @Entity('user_auth')
 @Unique(['user', 'authType'])
@@ -13,8 +13,8 @@ export class UserAuth {
 
     @Column({
         type: 'enum',
-        enum: AuthEnumType,
-        enumName: 'auth_type',
+        enum: AuthEnumType, // Utilise l'enum défini dans TypeScript
+        enumName: 'auth_type', // Associe l'enum au type ENUM existant dans PostgreSQL
     })
     authType: AuthEnumType;
 

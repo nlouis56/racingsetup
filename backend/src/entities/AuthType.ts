@@ -13,7 +13,7 @@ export class AuthType {
     @Column({
         type: 'enum',
         enum: AuthEnumType,
-        enumName: 'auth_type', // Use consistent naming to avoid recreation
+        enumName: 'auth_type',
     })
     type: AuthType;
 }

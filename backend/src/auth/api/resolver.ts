@@ -1,64 +1,105 @@
-import jwt from "jsonwebtoken";
-import { RegisterDTO, LoginDTO, AuthResponse } from "./domain";
+import { Request, Response } from "express";
 import { UserRepository } from "../repository/repositoryPostgreSQL";
-import { Users } from "../../entities/Users";
-import { comparePasswords, hashPassword } from "../../utils/hash";
+import { RegisterUserDTO, LoginUserDTO, UpdateUserDTO, UserResponse } from "./domain";
+import { hashPassword, comparePasswords } from "../../utils/hash";
+import { generateToken } from "../../utils/jwt";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
+const userRepository = new UserRepository();
 
-export class AuthService {
-    constructor(private readonly userRepository: UserRepository) { }
+export class UserResolver {
+    /**
+     * POST /user/register
+     */
+    async register(req: Request, res: Response): Promise<void> {
+        try {
+            const { password, ...userData }: RegisterUserDTO = req.body;
+            const passwordHash = await hashPassword(password);
 
-    async register(data: RegisterDTO): Promise<AuthResponse> {
-        const { email, password, displayName, firstName, lastName, racingNumber } = data;
+            const user = await userRepository.createUser({
+                ...userData,
+                passwordHash,
+            });
 
-        // Check if user already exists
-        const existingUser = await this.userRepository.findByEmail(email);
-        if (existingUser) {
-            throw new Error("User already exists");
+            const token = generateToken(user.id);
+            res.status(201).json({ token });
+        } catch (err: any) {
+            res.status(400).json({ message: err.message });
         }
-
-        // Hash the password
-        const hashedPassword = await hashPassword(password);
-
-        // Create and save the new user
-        const user = new Users();
-        user.email = email;
-        user.passwordHash = hashedPassword;
-        user.displayName = displayName;
-        user.firstName = firstName;
-        user.lastName = lastName;
-        user.racingNumber = racingNumber;
-        const savedUser = await this.userRepository.save(user);
-
-        // Generate JWT token
-        const token = jwt.sign({ userId: savedUser.id, email: savedUser.email, displayName: savedUser.displayName }, JWT_SECRET, { expiresIn: "1h" });
-
-        return {
-            token,
-        };
     }
 
-    async login(data: LoginDTO): Promise<AuthResponse> {
-        const { email, password } = data;
+    /**
+     * POST /user/login
+     */
+    async login(req: Request, res: Response): Promise<void> {
+        try {
+            const { username, password }: LoginUserDTO = req.body;
+            const user = await userRepository.findUserByUsername(username);
 
-        // Find user by email
-        const user = await this.userRepository.findByEmail(email);
-        if (!user) {
-            throw new Error("Invalid credentials");
+            if (!user) throw new Error("Invalid credentials");
+
+            const isMatch = await comparePasswords(password, user.passwordHash);
+            if (!isMatch) throw new Error("Invalid credentials");
+
+            const token = generateToken(user.id);
+            res.status(200).json({ token });
+        } catch (err: any) {
+            res.status(401).json({ message: err.message });
         }
+    }
 
-        // Check password
-        const isPasswordValid = await comparePasswords(password, user.passwordHash);
-        if (!isPasswordValid) {
-            throw new Error("Invalid credentials");
+    /**
+     * PUT /user/:id
+     */
+    async update(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = Number(req.params.id);
+            delete req.body.user;
+            const updateData: UpdateUserDTO = req.body;
+
+            if (updateData.passwordHash) {
+                updateData.passwordHash = await hashPassword(updateData.passwordHash);
+            }
+
+            const user = await userRepository.updateUser(userId, updateData);
+            res.status(200).json({ message: "User updated", user });
         }
+        catch (err: any) {
+            res.status(400).json({ message: err.message });
+        }
+    }
+    
+    
 
-        // Generate JWT token
-        const token = jwt.sign({ userId: user.id, email: user.email, displayName: user.displayName }, JWT_SECRET, { expiresIn: "1h" });
+    /**
+     * DELETE /user/:id
+     */
+    async delete(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = Number(req.params.id);
+            await userRepository.deleteUser(userId);
+            res.status(200).json({ message: "User deleted" });
+        } catch (err: any) {
+            res.status(400).json({ message: err.message });
+        }
+    }
 
-        return {
-            token,
-        };
+    /**
+     * GET /user/:id
+     */
+    async getUser(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = Number(req.params.id);
+            const user = await userRepository.findUserById(userId);
+
+            const response: UserResponse = {
+                id: user.id,
+                username: user.displayName,
+                racingNumber: user.racingNumber,
+            };
+
+            res.status(200).json(response);
+        } catch (err: any) {
+            res.status(404).json({ message: err.message });
+        }
     }
 }

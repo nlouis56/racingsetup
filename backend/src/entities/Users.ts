@@ -1,38 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
-import { Teams } from './Teams';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('users')
 export class Users {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ unique: true })
+    @Column({ unique: true, length: 320 })
     email: string;
 
-    @Column('text')
+    @Column({ name: 'password_hash', type: 'text' })
     passwordHash: string;
 
-    @Column({ length: 50 })
+    @Column({ name: 'first_name', length: 50 })
     firstName: string;
 
-    @Column({ length: 50 })
+    @Column({ name: 'last_name', length: 50 })
     lastName: string;
 
-    @Column({ length: 50 })
+    @Column({ name: 'display_name', length: 50 })
     displayName: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'racing_number', type: 'int', nullable: true })
     racingNumber: number;
 
-    @ManyToOne(() => Teams, (team) => team.users, { nullable: true, onDelete: 'SET NULL' })
-    team: Teams;
-
-    @Column({ nullable: true })
+    @Column({ name: 'profile_picture_path', type: 'text', nullable: true })
     profilePicturePath: string;
 
-    @Column({ nullable: true })
+    @Column({ name: 'banner_picture_path', type: 'text', nullable: true })
     bannerPicturePath: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }
