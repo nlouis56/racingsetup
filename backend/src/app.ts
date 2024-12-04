@@ -4,11 +4,9 @@ import { createServer } from 'http';
 import "reflect-metadata";
 import { Server } from "socket.io";
 import authRoutes from './auth/routes/routesPost';
-// import routerChannel from './setup/routes/routesPost';
+import vehicleRoutes from './vehicles/routes/routes';
 import { AppDataSource } from './data-source';
 import { swagger } from './documentation';
-// import privateMessageRouter from './privateMessage/routes/routes';
-// import userRoutes from './user/routes/routes';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -36,9 +34,7 @@ app.use('/docs', swagger.serve, swagger.setup)
 
 // Setup routes
 app.use('/api/user', authRoutes);
-// app.use("/api/channel", routerChannel);
-// app.use('/api/user', userRoutes);
-// app.use('/api/privateMessage', privateMessageRouter);
+app.use('/api/user/vehicles', vehicleRoutes);
 
 AppDataSource.initialize().then(() => {
   // Démarre le serveur

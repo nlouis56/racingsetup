@@ -1,0 +1,472 @@
+# racingsetup routes
+
+## User
+
+- POST /user/register
+
+Register a new user.
+
+Request body:
+
+```json
+{
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "racingNumber": "number",
+}
+```
+
+Response:
+
+```json
+{
+    "token": token
+}
+```
+
+- POST /user/login
+
+Log in a user.
+
+Request body:
+
+```json
+{
+    "username": "string",
+    "password": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "token" : token
+}
+```
+
+- PUT /user/:id
+
+Update a user.
+
+barear token : token
+
+Request body:
+
+```json
+{
+    "username": "string",
+    "password": "string",
+    "email": "string",
+    "firstName": "string",
+    "lastName": "string",
+    "racingNumber": "number",
+}
+```
+
+Response:
+
+```json
+{
+    "id": "string",
+    "username": "string",
+    "racingNumber": "number"
+}
+```
+
+- DELETE /user/:id
+
+barear token: token
+
+Delete a user.
+
+Response:
+
+```json
+{
+    "message": "User deleted"
+}
+``
+
+- GET /user/:id
+
+Get a user.
+
+Response:
+
+```json
+{
+    "id": "string",
+    "username": "string",
+    "racingNumber": "number"
+}
+```
+
+## Vehicle
+
+- POST /user/vehicle
+
+barear token: token
+
+Create a new vehicle.
+
+Request body:
+
+```json
+{
+    "vehicleType": "enum",
+    "name": "string",
+    "description": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "vehicleId": "number",
+    "vehicleType": "enum",
+    "name": "string",
+    "description": "string"
+}
+```
+
+- PUT /user/vehicle/:id
+
+Update a vehicle.
+barear token: token
+
+Request body:
+
+```json
+{
+    "vehicleType": "enum",
+    "name": "string",
+    "description": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "vehicleId": "number",
+    "vehicleType": "enum",
+    "name": "string",
+    "description": "string"
+}
+```
+
+- DELETE /user/vehicle/:id
+
+barear token: token
+
+Delete a vehicle.
+
+Response:
+
+```json
+{
+    "message": "Vehicle deleted"
+}
+```
+
+- GET /user/vehicle/:id
+
+Get a vehicle.
+
+Response:
+
+```json
+{
+    "vehicleId": "number",
+    "vehicleType": "enum",
+    "name": "string",
+    "description": "string"
+}
+```
+
+## Setup
+
+- POST /user/setup
+
+barear token: token
+
+Create a new setup.
+
+Request body:
+
+```json
+{
+    "vehicleId": "number",
+    "name": "string",
+    "description": "string",
+    "track": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "setupId": "number",
+    "vehicleId": "number",
+    "name": "string",
+    "description": "string",
+    "track": "string"
+}
+```
+
+- PUT /user/setup/:id
+
+barear token: token
+
+
+Update a setup.
+
+Request body:
+
+```json
+{
+    "vehicleId": "number",
+    "name": "string",
+    "description": "string",
+    "track": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "setupId": "number",
+    "vehicleId": "number",
+    "name": "string",
+    "description": "string",
+    "track": "string"
+}
+```
+
+- DELETE /user/setup/:id
+
+barear token: token
+
+
+Delete a setup.
+
+Response:
+
+```json
+{
+    "message": "Setup deleted"
+}
+```
+
+- GET /user/setup/:id
+
+barear token: token
+
+
+Get a setup (big json object with all the setup values).
+/!\ HAS TO AUTHENTICATE THE USER
+
+Response:
+
+```json
+{
+    "setupId": "number",
+    "vehicleId": "number",
+    "name": "string",
+    "description": "string",
+    "track": "string",
+    "values": [
+        {
+            "parameterId": "number",
+            "value": "json"
+        },
+        {
+            "parameterId": "number",
+            "value": "json"
+        },
+        ...
+    ]
+}
+```
+
+## Setup Values
+
+- POST /user/setup/:id/values
+
+Add a parameter value to a setup. Parameter references a setup parameter id (from setup_parameters table).
+Check if the parameter is valid for the vehicle type before showing it to the user.
+
+Request body:
+
+```json
+{
+    "setupId": "number",
+    "parameterId": "number",
+    "value": "json"
+}
+```
+
+The value is a json because it can be a string, a number, a boolean, etc. It can also include comments from the user.
+
+
+Response:
+
+```json
+{
+    "setupId": "number",
+    "setupValueId": "number",
+    "value": "string"
+}
+```
+
+- PUT /user/setup/:id/values/:valueId
+
+Update a parameter value in a setup.
+
+Request body:
+
+```json
+{
+    "value": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "setupId": "number",
+    "setupValueId": "number",
+    "value": "string"
+}
+```
+
+- DELETE /user/setup/:id/values/:valueId
+
+Delete a parameter value from a setup.
+
+Response:
+
+```json
+{
+    "message": "Value deleted"
+}
+```
+
+## Team
+
+- POST /user/team
+
+Create a new team.
+
+Request body:
+
+```json
+{
+    "userId": "number",
+    "name": "string",
+    "description": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "teamId": "number",
+    "name": "string",
+    "description": "string"
+}
+```
+
+- PUT /user/team/:id
+
+Update a team.
+
+Request body:
+
+```json
+{
+    "userId": "number",
+    "name": "string",
+    "description": "string"
+}
+```
+
+Response:
+
+```json
+{
+    "teamId": "number",
+    "name": "string",
+    "description": "string"
+}
+```
+
+- DELETE /user/team/:id
+
+Delete a team.
+
+Response:
+
+```json
+{
+    "message": "Team deleted"
+}
+```
+
+- GET /user/team/:id
+
+Get a team.
+
+Response:
+
+```json
+{
+    "teamId": "number",
+    "name": "string",
+    "description": "string"
+}
+```
+
+## Team Members
+
+- POST /user/team/:id/members
+
+Add a member to a team.
+
+Request body:
+
+```json
+{
+    "userId": "number"
+}
+```
+
+Response:
+
+```json
+{
+    "teamId": "number",
+    "userId": "number"
+}
+```
+
+- DELETE /user/team/:id/members/:userId
+
+Remove a member from a team.
+
+Response:
+
+```json
+{
+    "message": "Member removed"
+}
+```

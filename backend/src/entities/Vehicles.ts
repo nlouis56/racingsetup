@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { VehicleType, VehicleEnumType } from './VehicleType';
+import { VehicleEnumType } from './VehicleType';
 
 @Entity('vehicles')
 export class Vehicles {
@@ -13,12 +13,14 @@ export class Vehicles {
         type: 'enum',
         enum: VehicleEnumType,
         enumName: 'vehicle_type',
+        name: 'type',
     })
     vehicleType: VehicleEnumType;
 
     @Column({ type: 'text', nullable: true })
     description: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }
+
