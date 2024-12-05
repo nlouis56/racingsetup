@@ -38,12 +38,23 @@ CREATE TABLE vehicles (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Saved vehicles (user-specific instances)
+CREATE TABLE saved_vehicles (
+    id SERIAL PRIMARY KEY,
+    owner_id INT REFERENCES users(id) ON DELETE SET NULL,
+    vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
+    name VARCHAR(50) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(owner_id, name)
+);
+
 -- Setups table
 -- Create a new setup: INSERT INTO setups (vehicle_id, user_id, name, description, track) VALUES (1, 2, 'Kart Setup for Rain', 'Optimized setup for wet conditions', 'Silverstone');
 -- Update a setup: UPDATE setups SET name = 'Kart Setup for Rainy Conditions' WHERE id = 1;
 CREATE TABLE setups (
     id SERIAL PRIMARY KEY,
-    vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
+    vehicle_id INT REFERENCES saved_vehicles(id) ON DELETE SET NULL,
     user_id INT REFERENCES users(id) ON DELETE SET NULL,
     name VARCHAR(50) NOT NULL,
     description TEXT,
@@ -104,17 +115,6 @@ CREATE TABLE message_images (
     private_message_id INT REFERENCES private_messages(id) ON DELETE CASCADE,
     image_path TEXT NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Saved vehicles (user-specific instances)
-CREATE TABLE saved_vehicles (
-    id SERIAL PRIMARY KEY,
-    owner_id INT REFERENCES users(id) ON DELETE SET NULL,
-    vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
-    name VARCHAR(50) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(owner_id, name)
 );
 
 -- Setup parameters table

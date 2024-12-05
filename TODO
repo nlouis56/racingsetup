@@ -300,6 +300,8 @@ Response:
 
 - POST /user/setup/:id/values
 
+barear token: token
+
 Add a parameter value to a setup. Parameter references a setup parameter id (from setup_parameters table).
 Check if the parameter is valid for the vehicle type before showing it to the user.
 
@@ -330,6 +332,8 @@ Response:
 
 Update a parameter value in a setup.
 
+barear token: token
+
 Request body:
 
 ```json
@@ -351,6 +355,8 @@ Response:
 - DELETE /user/setup/:id/values/:valueId
 
 Delete a parameter value from a setup.
+
+barear token: token
 
 Response:
 

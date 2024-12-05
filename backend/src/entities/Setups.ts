@@ -1,16 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 import { Users } from './Users';
-import { Vehicles } from './Vehicles';
+import { SavedVehicles } from './SavedVehicles';
 
 @Entity('setups')
 export class Setups {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Vehicles, { nullable: true, onDelete: 'SET NULL' })
-    vehicle: Vehicles;
+    @ManyToOne(() => SavedVehicles, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'vehicle_id' }) // Définit explicitement le nom de la colonne
+    vehicle: SavedVehicles;
 
     @ManyToOne(() => Users, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'user_id' }) // Définit explicitement le nom de la colonne
     user: Users;
 
     @Column({ length: 50 })
@@ -22,6 +24,6 @@ export class Setups {
     @Column({ type: 'text', nullable: true })
     track: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 }

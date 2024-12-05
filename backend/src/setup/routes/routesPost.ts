@@ -1,55 +1,107 @@
-import express, { Request, Response } from "express";
-import { SetupService } from "../api/resolver";
-import { CreateSetupDTO } from "../api/domain";
-import { authenticateToken } from "../../middleware/auth";
+import { Router } from 'express';
+import { SetupResolver, SetupValueResolver } from '../api/resolver';
+import { authenticateToken } from '../../middleware/auth';
+import { SetupParameters, Setups, SetupValues } from '../../entities';
 
-const router = express.Router();
-const setupService = new SetupService();
+const router = Router();
+const resolver = new SetupResolver();
+const resolverValue = new SetupValueResolver();
 
-/**
- * @swagger
- * /setup/create:
- *   post:
- *     summary: Create a new setup
- *     description: Create a new setup with the provided name, vehicle, and overall settings. Requires authentication.
- *     tags: [setup]
- *     security:
- *       - bearerAuth: []  # Requiert un token JWT
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateSetupDTO'
- *     responses:
- *       201:
- *         description: setup created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/setup'
- *       400:
- *         description: setup already exists or invalid request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   description: Error message
- *       401:
- *         description: Unauthorized, missing or invalid token
- */
-router.post("/create", authenticateToken, async (req: Request, res: Response) => {
-  const data: CreateSetupDTO = req.body;
-  data.userId = req.body.user.userId;
+router.post('/setup', authenticateToken, async (req, res) => {
   try {
-    const channel = await setupService.save(data);
-    res.status(201).json(channel);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    const data = req.body;
+    const setup = await resolver.createSetup({
+        name: data.name,
+        description: data.description,
+        vehicle: data.vehicleId,
+        user: req.body.user.userId,
+    });
+    res.json(setup);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: 'Invalid setup' });
   }
+});
+
+router.put('/setup/:id', authenticateToken, async (req, res) => {
+    try {
+      const setup = await resolver.updateSetup(Number(req.params.id), {
+          name: req.body.name,
+          description: req.body.description,
+          track: req.body.track,
+          vehicle: req.body.vehicleId,
+      });
+      res.json(setup);
+    } catch (error) {
+      res.status(400).json({ message: 'Invalid setup' });
+    }
+});
+
+router.delete('/setup/:id', authenticateToken, async (req, res) => {
+    try {
+      await resolver.deleteSetup(Number(req.params.id));
+      res.json({ message: 'Setup deleted' });
+    } catch (error) {
+      res.status(400).json({ message: 'Invalid setup' });
+    }
+});
+
+router.get('/setup/:id', authenticateToken, async (req, res) => {
+    try {
+      delete req.body.user;
+      const setup = await resolver.getSetupById(Number(req.params.id));
+      if (!setup) {
+          throw new Error();
+      }
+      res.json(setup);
+    } catch (error) {
+      res.status(400).json({ message: 'Setup not found' });
+    }
+});
+
+
+router.post('/setup/:id/values', authenticateToken, async (req, res) => {
+    try {
+        const setupId = parseInt(req.params.id, 10);
+        const { parameterId, value } = req.body;
+
+        // Vérifiez si le setup et le paramètre existent
+        const savedValue = await resolverValue.createSetupValue({
+            setup: { id: setupId } as Setups,
+            parameter: { id: parameterId } as SetupParameters,
+            value,
+        });
+
+        res.status(201).json({
+            setupId: savedValue.setup.id,
+            setupValueId: savedValue.id,
+            value: savedValue.value,
+        });
+    } catch (error: any) {
+        res.status(500).json({
+            message: 'An error occurred',
+            error: error.message,
+        });
+    }
+});
+
+
+
+router.put('/setup/:id/values/:valueId', authenticateToken, async (req, res) => {
+  try {
+    const setupValue = await resolverValue.updateSetupValue(Number(req.params.valueId), req.body.value);
+    if (!setupValue) {
+        throw new Error();
+    }
+    res.json(setupValue);
+  } catch (error) {
+    res.status(400).json({ message: 'Invalid value' });
+  }
+});
+
+router.delete('/setup/:id/values/:valueId', authenticateToken, async (req, res) => {
+    await resolverValue.deleteSetupValue(Number(req.params.valueId));
+    res.json({ message: 'Value deleted' });
 });
 
 export default router;

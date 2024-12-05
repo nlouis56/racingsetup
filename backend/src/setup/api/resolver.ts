@@ -1,46 +1,40 @@
-import { Setups } from "../../entities";
-import { Repository } from "typeorm";
-import { AppDataSource } from "../../data-source";
-import { CreateSetupDTO } from "./domain";
+import { SetupRepository } from '../repository/repositoryPostgreSQL';
+import { SetupValueRepository } from '../repository/repositoryPostgreSQL';
+import { SetupValues } from '../../entities/SetupValues';
+import { Setups } from '../../entities/Setups';
 
-export class SetupService {
-    private setupRepository: Repository<Setups>;
+export class SetupResolver {
+    private repository = new SetupRepository();
 
-    constructor() {
-        this.setupRepository = AppDataSource.getRepository(Setups);
+    async createSetup(data: Partial<Setups>): Promise<Setups> {
+        return this.repository.createSetup(data);
     }
 
-    async findAll(): Promise<Setups[]> {
-        return await this.setupRepository.find();
+    async updateSetup(id: number, data: Partial<Setups>): Promise<Setups | null> {
+        return this.repository.updateSetup(id, data);
     }
 
-    async findById(id: number): Promise<Setups | null> {
-        return await this.setupRepository.findOneBy({ id });
+    async deleteSetup(id: number): Promise<void> {
+        this.repository.deleteSetup(id);
     }
 
-    async save(setup: CreateSetupDTO): Promise<Setups> {
-        const newSetup = new Setups();
-        newSetup.name = setup.name;
-        newSetup.description = setup.description;
-        newSetup.track = setup.track;
-        newSetup.vehicle.id = setup.vehicleId;
-        newSetup.user.id = setup.userId;
-        return await this.setupRepository.save(newSetup);
+    async getSetupById(id: number): Promise<Setups | null> {
+        return this.repository.findSetupById(id);
+    }
+}
+
+export class SetupValueResolver {
+    private repository = new SetupValueRepository();
+
+    public async createSetupValue(data: Partial<SetupValues>): Promise<SetupValues> {
+        return this.repository.createSetupValue(data);
     }
 
-    async delete(setup: Setups): Promise<void> {
-        await this.setupRepository.remove(setup);
+    async updateSetupValue(id: number, value: Record<string, any>): Promise<SetupValues | null> {
+        return this.repository.updateSetupValue(id, value);
     }
 
-    async findSetupsByVehicleId(vehicleId: number): Promise<Setups[]> {
-        return await this.setupRepository.find({ where: { vehicle: { id: vehicleId } } });
-    }
-
-    async findSetupsByUserId(userId: number): Promise<Setups[]> {
-        return await this.setupRepository.find({ where: { user: { id: userId } } });
-    }
-
-    async findSetupsByUserIdAndVehicleId(userId: number, vehicleId: number): Promise<Setups[]> {
-        return await this.setupRepository.find({ where: { user: { id: userId }, vehicle: { id: vehicleId } } });
+    async deleteSetupValue(id: number): Promise<void> {
+        return this.repository.deleteSetupValue(id);
     }
 }
