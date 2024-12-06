@@ -6,7 +6,49 @@ import { authenticateToken, authorizeAdmin } from '../../middleware/auth';
 const adminRouter = express.Router();
 const userRepository = new UserRepository();
 
-// GET Users
+/**
+ * @swagger
+ * /api/admin/users:
+ *   get:
+ *     summary: Get a list of all users
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   email:
+ *                     type: string
+ *                     example: user@example.com
+ *                   firstName:
+ *                     type: string
+ *                     example: John
+ *                   lastName:
+ *                     type: string
+ *                     example: Doe
+ *                   displayName:
+ *                     type: string
+ *                     example: JohnnyD
+ *                   racingNumber:
+ *                     type: integer
+ *                     example: 42
+ *                   isAdmin:
+ *                     type: boolean
+ *                     example: true
+ *       500:
+ *         description: An error occurred
+ */
 adminRouter.get('/users', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const users = await userRepository.findAllUsers();
@@ -24,7 +66,84 @@ adminRouter.get('/users', authenticateToken, authorizeAdmin, async (req, res) =>
     }
 });
 
-// ADD New User
+/**
+ * @swagger
+ * /api/admin/users:
+ *   post:
+ *     summary: Add a new user
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - firstName
+ *               - lastName
+ *               - racingNumber
+ *               - displayName
+ *               - defaultPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *               racingNumber:
+ *                 type: integer
+ *                 example: 42
+ *               displayName:
+ *                 type: string
+ *                 example: JohnnyD
+ *               defaultPassword:
+ *                 type: string
+ *                 example: "password123"
+ *               isAdmin:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 email:
+ *                   type: string
+ *                   example: user@example.com
+ *                 firstName:
+ *                   type: string
+ *                   example: John
+ *                 lastName:
+ *                   type: string
+ *                   example: Doe
+ *                 displayName:
+ *                   type: string
+ *                   example: JohnnyD
+ *                 racingNumber:
+ *                   type: integer
+ *                   example: 42
+ *                 isAdmin:
+ *                   type: boolean
+ *                   example: false
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: An error occurred
+ */
 adminRouter.post('/users', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const { email, firstName, lastName, racingNumber, displayName, isAdmin, defaultPassword } = req.body;
@@ -60,7 +179,82 @@ adminRouter.post('/users', authenticateToken, authorizeAdmin, async (req, res) =
     }
 });
 
-// EDIT User
+/**
+ * @swagger
+ * /api/admin/users/{id}:
+ *   put:
+ *     summary: Edit an existing user
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *         description: The ID of the user to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: newuser@example.com
+ *               firstName:
+ *                 type: string
+ *                 example: Jane
+ *               lastName:
+ *                 type: string
+ *                 example: Smith
+ *               displayName:
+ *                 type: string
+ *                 example: JaneS
+ *               racingNumber:
+ *                 type: integer
+ *                 example: 24
+ *               isAdmin:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 1
+ *                 email:
+ *                   type: string
+ *                   example: newuser@example.com
+ *                 firstName:
+ *                   type: string
+ *                   example: Jane
+ *                 lastName:
+ *                   type: string
+ *                   example: Smith
+ *                 displayName:
+ *                   type: string
+ *                   example: JaneS
+ *                 racingNumber:
+ *                   type: integer
+ *                   example: 24
+ *                 isAdmin:
+ *                   type: boolean
+ *                   example: true
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: An error occurred
+ */
 adminRouter.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
@@ -96,7 +290,37 @@ adminRouter.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res
     }
 });
 
-// DELETE User
+/**
+ * @swagger
+ * /api/admin/users/{id}:
+ *   delete:
+ *     summary: Delete a user
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *         description: The ID of the user to delete
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User deleted successfully
+ *       500:
+ *         description: An error occurred
+ */
 adminRouter.delete('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);

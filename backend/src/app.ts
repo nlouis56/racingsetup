@@ -32,7 +32,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
   }));
 app.use(express.json());
-app.use('/docs', swagger.serve, swagger.setup)
+app.use('/api/docs', swagger.serve, swagger.setup)
 
 // Setup routes
 app.use('/api/user', authRoutes);
