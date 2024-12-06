@@ -20,7 +20,7 @@ export class UserResolver {
                 passwordHash,
             });
 
-            const token = generateToken(user.id);
+            const token = generateToken(user.id, user.isAdmin);
             res.status(201).json({ token });
         } catch (err: any) {
             res.status(400).json({ message: err.message });
@@ -40,7 +40,7 @@ export class UserResolver {
             const isMatch = await comparePasswords(password, user.passwordHash);
             if (!isMatch) throw new Error("Invalid credentials");
 
-            const token = generateToken(user.id);
+            const token = generateToken(user.id, user.isAdmin);
             res.status(200).json({ token });
         } catch (err: any) {
             res.status(401).json({ message: err.message });

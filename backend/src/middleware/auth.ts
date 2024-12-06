@@ -21,3 +21,17 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next();
   });
 };
+
+export const authorizeAdmin = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.body.user) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  if (!req.body.user.isAdmin) {
+    res.status(403).json({ message: "Forbidden" });
+    return;
+  }
+
+  next();
+}

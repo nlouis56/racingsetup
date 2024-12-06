@@ -8,6 +8,7 @@ import vehicleRoutes from './vehicles/routes/routes';
 import { AppDataSource } from './data-source';
 import { swagger } from './documentation';
 import setupRoutes from './setup/routes/routesPost';
+import adminRoutes from './user/routes/routes';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -37,6 +38,7 @@ app.use('/docs', swagger.serve, swagger.setup)
 app.use('/api/user', authRoutes);
 app.use('/api/user/vehicles', vehicleRoutes);
 app.use('/api/user', setupRoutes);
+app.use('/api/admin', adminRoutes);
 
 AppDataSource.initialize().then(() => {
   // Démarre le serveur

@@ -16,6 +16,7 @@ CREATE TABLE users (
     racing_number INT,
     profile_picture_path TEXT,
     banner_picture_path TEXT,
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -144,3 +145,6 @@ CREATE INDEX idx_posts_user_id ON posts(user_id);
 CREATE INDEX idx_saved_vehicles_owner_id ON saved_vehicles(owner_id);
 CREATE INDEX idx_setups_vehicle_id ON setups(vehicle_id);
 CREATE INDEX idx_user_auth_user_id ON user_auth(user_id);
+
+-- Create a new admin user
+INSERT INTO users (email, password_hash, first_name, last_name, display_name, is_admin) VALUES ('admin@iii.eu', '$2a$10$LVxGvq/WZ60iMMoi/WyUM.cq9rr/vnpoRFChfmOIpE5kwq2PLfVhq', 'Admin', 'User', 'Admin', TRUE);
