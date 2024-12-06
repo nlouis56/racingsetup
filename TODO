@@ -372,11 +372,12 @@ Response:
 
 Create a new team.
 
+Barear token: token
+
 Request body:
 
 ```json
 {
-    "userId": "number",
     "name": "string",
     "description": "string"
 }
@@ -396,11 +397,12 @@ Response:
 
 Update a team.
 
+barear token: token
+
 Request body:
 
 ```json
 {
-    "userId": "number",
     "name": "string",
     "description": "string"
 }
@@ -420,6 +422,8 @@ Response:
 
 Delete a team.
 
+barear token: token
+
 Response:
 
 ```json
@@ -431,6 +435,8 @@ Response:
 - GET /user/team/:id
 
 Get a team.
+
+barear token: token
 
 Response:
 
@@ -447,6 +453,8 @@ Response:
 - POST /user/team/:id/members
 
 Add a member to a team.
+
+barear token: token
 
 Request body:
 
@@ -468,6 +476,8 @@ Response:
 - DELETE /user/team/:id/members/:userId
 
 Remove a member from a team.
+
+barear token: token
 
 Response:
 

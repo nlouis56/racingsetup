@@ -64,15 +64,14 @@ adminRouter.post('/users', authenticateToken, authorizeAdmin, async (req, res) =
 adminRouter.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
+        delete req.body.user;
         const updatedData = req.body;
-
         const updatedUser = await userRepository.updateUser(id, updatedData);
 
         if (!updatedUser) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
-
         res.json({
             id: updatedUser.id,
             email: updatedUser.email,

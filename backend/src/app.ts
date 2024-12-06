@@ -9,6 +9,7 @@ import { AppDataSource } from './data-source';
 import { swagger } from './documentation';
 import setupRoutes from './setup/routes/routesPost';
 import adminRoutes from './user/routes/routes';
+import teamRouter from './team/routes/routes';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -39,36 +40,10 @@ app.use('/api/user', authRoutes);
 app.use('/api/user/vehicles', vehicleRoutes);
 app.use('/api/user', setupRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', teamRouter);
 
 AppDataSource.initialize().then(() => {
   // Démarre le serveur
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  // Configure Socket.io pour la messagerie et les notifications en temps réel
-  /* const notificationService = setupNotificationSocket(io);
-  setupSocket(io);
-
-
-  // Intégration des événements d'application avec les notifications
-  io.on("send_private_message", (data) => {
-    const notification: PrivateMessageNotification = {
-      type: "PRIVATE_MESSAGE",
-      fromUserId: data.senderId,
-      toUserId: data.receiverId,
-      message: data.content,
-      timestamp: new Date(),
-    };
-    notificationService.sendPrivateMessageNotification(notification);
-  });
-
-  io.on("send_channel_message", (data) => {
-    const notification: ChannelMessageNotification = {
-      type: "CHANNEL_MESSAGE",
-      channelId: data.channelId,
-      fromUserId: data.userId,
-      message: data.content,
-      timestamp: new Date(),
-    };
-    notificationService.sendChannelMessageNotification(notification);
-  }); */
 
 }).catch((error) => console.error('Error initializing data source:', error));
