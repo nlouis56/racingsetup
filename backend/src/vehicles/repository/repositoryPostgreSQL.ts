@@ -39,7 +39,7 @@ export class VehicleRepository {
     }
 
     async deleteVehicle(vehicleId: number): Promise<void> {
-        const result = await this.savedVehicleRepository.delete({ vehicle: { id: vehicleId } });
+        const result = await this.savedVehicleRepository.delete({ id: vehicleId });
         if (result.affected === 0) {
             throw new Error(`Vehicle with id ${vehicleId} not found`);
         }
