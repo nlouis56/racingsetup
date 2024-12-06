@@ -1,14 +1,19 @@
 // src/pages/register.tsx
 import Layout from '@/components/Layout'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { backendUrl } from '@/data/callServer'
+import router from 'next/router'
 
 export default function Register() {
   const [formData, setFormData] = useState({
     username: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
+    racingNumber: 0,
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,11 +21,38 @@ export default function Register() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Ajoute ici la logique d'inscription (e.g., appel API)
-    console.log('Form data submitted:', formData)
+
+    const bodyData = { displayName: formData.username,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      password: formData.password,
+      racingNumber: formData.racingNumber
+    };
+
+    const response = await fetch(`http://${backendUrl}/api/user/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyData),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      router.push('/dashboard');
+    } else {
+      console.error('Failed to register user:', data);
+    }
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      router.push('/dashboard')
+    }
+  }, [])
 
   return (
     <Layout>
@@ -43,6 +75,40 @@ export default function Register() {
                 id="username"
                 name="username"
                 value={formData.username}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300"
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                First Name
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300"
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Last Name
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
                 className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300"
                 required
@@ -95,6 +161,23 @@ export default function Register() {
                 className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300"
                 required
               />
+              <div>
+              <label
+                htmlFor="racingNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Racing Number
+              </label>
+              <input
+                type="text"
+                id="racingNumber"
+                name="racingNumber"
+                value={formData.racingNumber}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300"
+                required
+              />
+            </div>
             </div>
             <button
               type="submit"

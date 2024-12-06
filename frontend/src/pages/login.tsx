@@ -1,12 +1,13 @@
 // src/pages/login.tsx
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Layout from '@/components/Layout'
 import Link from 'next/link'
+import { backendUrl } from '@/data/callServer'
 
 export default function Login() {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: '',
   })
   const [loading, setLoading] = useState(false)
@@ -24,7 +25,7 @@ export default function Login() {
     setError(null)
 
     try {
-      const res = await fetch('/api/login', {
+      const res = await fetch(`http://${backendUrl}/api/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -45,6 +46,13 @@ export default function Login() {
     }
   }
 
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      router.push('/dashboard')
+    }
+  }, [])
+
   return (
     <Layout>
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -61,16 +69,16 @@ export default function Login() {
           <div className="space-y-4">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="Username"
                 className="block text-sm font-medium text-gray-700"
               >
-                Email
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 className="block w-full px-3 py-2 mt-1 border rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
                 required

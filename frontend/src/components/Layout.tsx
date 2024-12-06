@@ -33,17 +33,6 @@ export default function Layout({
                   <FaBars size={20} />
                 </button>
               )}
-              <nav className="hidden md:flex space-x-4">
-                <Link href="/login" className="hover:underline">
-                  Login
-                </Link>
-                <Link href="/register" className="hover:underline">
-                  Register
-                </Link>
-                <Link href="/dashboard" className="hover:underline">
-                  Dashboard
-                </Link>
-              </nav>
             </>
           )}
         </header>

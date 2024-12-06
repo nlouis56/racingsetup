@@ -7,6 +7,8 @@ import { Setup } from '@/utils/types';
 import { FaBars } from 'react-icons/fa';
 import 'tailwindcss/tailwind.css';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
+import router from 'next/router';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -42,6 +44,11 @@ export default function Dashboard() {
 
     setSetups(mockSetups);
     setLoading(false);
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+    }
   }, []);
 
   // Gestion de la suppression d'un setup
@@ -86,17 +93,7 @@ export default function Dashboard() {
         >
           <FaBars size={20} />
         </button>
-        <nav className="hidden md:flex space-x-4">
-          <Link href="/login" className="hover:underline">
-            Login
-            </Link>
-            <Link href="/register" className="hover:underline">
-            Register
-            </Link>
-            <Link href="/dashboard" className="hover:underline">
-            Dashboard
-            </Link>
-        </nav>
+        <Navbar />
       </header>
 
       {/* Content */}
