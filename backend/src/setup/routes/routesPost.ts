@@ -32,6 +32,9 @@ const resolverValue = new SetupValueResolver();
  *               vehicleId:
  *                 type: integer
  *                 example: 1
+ *               track:
+ *                type: string
+ *               example: "Silverstone"
  *     responses:
  *       201:
  *         description: Setup successfully created
@@ -61,6 +64,7 @@ router.post('/setup', authenticateToken, async (req, res) => {
     const setup = await resolver.createSetup({
         name: data.name,
         description: data.description,
+        track: data.track,
         vehicle: data.vehicleId,
         user: req.body.user.userId,
     });
