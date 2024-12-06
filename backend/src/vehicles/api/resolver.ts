@@ -104,5 +104,24 @@ export class VehicleResolver {
             res.status(404).json({ message: err.message });
         }
     }
+
+    /**
+     * GET /user/vehicles
+     */
+
+    async getAllVehiclesByUser(req: Request, res: Response): Promise<void> {
+        try {
+            const vehicles = await vehicleRepository.findAllVehicles(req.body.user.userId);
+            const response = vehicles.map(vehicle => ({
+                vehicleId: vehicle.id,
+                vehicleType: vehicle.vehicleType,
+                name: vehicle.name,
+                description: vehicle.description,
+            }));
     
+            res.status(200).json(response);
+        } catch (err: any) {
+            res.status(404).json({ message: err.message });
+        }
+    }
 }

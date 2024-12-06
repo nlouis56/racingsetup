@@ -55,6 +55,15 @@ export class SetupRepository {
         return { ...setup, values: setupValues };
     }
 
+    async findAllSetupsByUser(userId: number): Promise<Setups[]> {
+        if (isNaN(userId)) {
+            throw new Error("Invalid userId: must be a number" + userId);
+        }
+        return this.repository.find({
+            where: { id: userId }, relations: ['vehicle']
+        });
+    }
+
     async updateSetup(id: number, data: Partial<Setups>): Promise<Setups> {
         const res = await this.repository.update(id, data);
         if (res.affected === 0) {

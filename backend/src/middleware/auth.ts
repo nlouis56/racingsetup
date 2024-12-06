@@ -17,7 +17,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    req.body.user = user as { userId: number; email: string; displayName: string };
+    req.body.user = user as { userId: number; isAdmin: boolean };
     next();
   });
 };

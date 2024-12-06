@@ -21,6 +21,10 @@ export class SetupResolver {
     async getSetupById(id: number): Promise<Setups | null> {
         return this.repository.findSetupById(id);
     }
+
+    async getAllSetups(userId: number): Promise<Setups[]> {
+        return this.repository.findAllSetupsByUser(userId);
+    }
 }
 
 export class SetupValueResolver {

@@ -26,7 +26,6 @@ const io = new Server(server, {
   });
 const PORT = process.env.BACKEND_PORT || 8080;
 
-
 app.use(cors({
     // origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
     origin: "*",

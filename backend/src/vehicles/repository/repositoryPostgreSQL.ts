@@ -32,4 +32,8 @@ export class VehicleRepository {
         }
         return vehicle;
     }
+
+    async findAllVehicles(id: number): Promise<Vehicles[]> {
+        return this.vehicleRepository.find({ where: { id } });
+    }
 }

@@ -23,6 +23,18 @@ router.post('/setup', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/setup/list', authenticateToken, async (req, res) => {
+  try {
+    const setups = await resolver.getAllSetups(req.body.user.userId);
+    if (!setups) {
+      throw new Error();
+    }
+    res.json(setups);
+  } catch (error: any) {
+      res.status(400).json({ message: 'Setups not found', error: error.message });
+    }
+})
+
 router.put('/setup/:id', authenticateToken, async (req, res) => {
     try {
       const setup = await resolver.updateSetup(Number(req.params.id), {
@@ -59,7 +71,6 @@ router.get('/setup/:id', authenticateToken, async (req, res) => {
     }
 });
 
-
 router.post('/setup/:id/values', authenticateToken, async (req, res) => {
     try {
         const setupId = parseInt(req.params.id, 10);
@@ -84,8 +95,6 @@ router.post('/setup/:id/values', authenticateToken, async (req, res) => {
         });
     }
 });
-
-
 
 router.put('/setup/:id/values/:valueId', authenticateToken, async (req, res) => {
   try {
