@@ -66,6 +66,14 @@ adminRouter.put('/users/:id', authenticateToken, authorizeAdmin, async (req, res
         const id = parseInt(req.params.id, 10);
         delete req.body.user;
         const updatedData = req.body;
+        // check if isAdmin is a boolean and change it the default value if not
+        if (typeof updatedData.isAdmin !== 'boolean') {
+            if (updatedData.isAdmin === 'true') {
+                updatedData.isAdmin = true;
+            } else {
+                updatedData.isAdmin = false;
+            }
+        }
         const updatedUser = await userRepository.updateUser(id, updatedData);
 
         if (!updatedUser) {
