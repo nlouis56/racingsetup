@@ -46,8 +46,7 @@ CREATE TABLE saved_vehicles (
     vehicle_id INT REFERENCES vehicles(id) ON DELETE SET NULL,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(owner_id, name)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Setups table

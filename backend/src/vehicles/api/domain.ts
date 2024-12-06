@@ -14,7 +14,6 @@ export interface UpdateVehicleDTO {
 
 export interface VehicleResponse {
     vehicleId: number;
-    vehicleType: string;
     name: string;
     description: string;
 }

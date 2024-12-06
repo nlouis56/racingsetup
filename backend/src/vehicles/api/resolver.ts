@@ -21,11 +21,10 @@ export class VehicleResolver {
                 name: vehicleData.name,
                 description: vehicleData.description,
             }
-            const vehicle = await vehicleRepository.createVehicle(data);
+            const vehicle = await vehicleRepository.createVehicle(data, req.body.user.userId);
     
             const response: VehicleResponse = {
                 vehicleId: vehicle.id,
-                vehicleType: vehicle.vehicleType,
                 name: vehicle.name,
                 description: vehicle.description,
             };
@@ -58,7 +57,6 @@ export class VehicleResolver {
     
             const response: VehicleResponse = {
                 vehicleId: updatedVehicle.id,
-                vehicleType: updatedVehicle.vehicleType,
                 name: updatedVehicle.name,
                 description: updatedVehicle.description,
             };
@@ -94,7 +92,6 @@ export class VehicleResolver {
     
             const response: VehicleResponse = {
                 vehicleId: vehicle.id,
-                vehicleType: vehicle.vehicleType,
                 name: vehicle.name,
                 description: vehicle.description,
             };
@@ -114,7 +111,6 @@ export class VehicleResolver {
             const vehicles = await vehicleRepository.findAllVehicles(req.body.user.userId);
             const response = vehicles.map(vehicle => ({
                 vehicleId: vehicle.id,
-                vehicleType: vehicle.vehicleType,
                 name: vehicle.name,
                 description: vehicle.description,
             }));
