@@ -36,9 +36,9 @@ const Dashboard = () => {
     };
 
     try {
-      
+
     const token = localStorage.getItem('token');
-    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles`, {
+    const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/vehicles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const Dashboard = () => {
     };
 
     try {
-    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup`, {
+    const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/setup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ const Dashboard = () => {
     const confirmDelete = confirm(`Are you sure you want to delete ${setup.name}?`);
     if (confirmDelete) {
       try {
-      const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup/${setup.id}`, {
+      const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/setup/${setup.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ const Dashboard = () => {
     const confirmDelete = confirm(`Are you sure you want to delete ${vehicle.name}?`);
     if (confirmDelete) {
       try {
-      const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles/${vehicle.id}`, {
+      const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/vehicles/${vehicle.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +174,7 @@ const Dashboard = () => {
 
   const getAllVehicules = async () => {
     try {
-    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles/list`, {
+    const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/vehicles/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ const Dashboard = () => {
 
   const getAllSetups = async () => {
     try {
-    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup/list`, {
+    const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/setup/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -309,22 +309,22 @@ const Dashboard = () => {
       // Récupère les données depuis IndexedDB
       const cachedVehicles = await db.vehicles.toArray();
       const cachedSetups = await db.setups.toArray();
-  
+
       if (cachedVehicles.length > 0) setVehicles(cachedVehicles);
       if (cachedSetups.length > 0) setSetups(cachedSetups);
-  
+
       // Si online, synchronise les données depuis l'API
       if (navigator.onLine) {
         const apiVehicles = await getAllVehicules();
         setVehicles(apiVehicles);
         await db.vehicles.bulkPut(apiVehicles); // Met à jour IndexedDB
-  
+
         const apiSetups = await getAllSetups();
         setSetups(apiSetups);
         await db.setups.bulkPut(apiSetups); // Met à jour IndexedDB
       }
     };
-  
+
     fetchFromCache();
   }, []);
 

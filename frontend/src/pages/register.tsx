@@ -32,7 +32,7 @@ export default function Register() {
       racingNumber: formData.racingNumber
     };
 
-    const response = await fetch(`http://${backendUrl}/api/user/register`, {
+    const response = await fetch(`${backendUrl}/api/user/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyData),
@@ -41,6 +41,7 @@ export default function Register() {
     const data = await response.json();
 
     if (response.ok) {
+      localStorage.setItem('token', data.token);
       router.push('/dashboard');
     } else {
       console.error('Failed to register user:', data);
