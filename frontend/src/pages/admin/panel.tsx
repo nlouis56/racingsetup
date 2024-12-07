@@ -101,7 +101,7 @@ export default function AdminPanel() {
       return;
     }
 
-    const response = await fetch(`http://${backendUrl}/api/admin/users/${id}`, {
+    const response = await fetch(`${backendUrl}/api/admin/users/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` },
@@ -138,7 +138,7 @@ export default function AdminPanel() {
       return;
     }
 
-    const response = await fetch(`http://${backendUrl}/api/admin/users`, {
+    const response = await fetch(`${backendUrl}/api/admin/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` },
@@ -161,7 +161,7 @@ export default function AdminPanel() {
   };
 
   const getAllUsers = async () => {
-    const response = await fetch(`http://${backendUrl}/api/admin/users`, {
+    const response = await fetch(`${backendUrl}/api/admin/users`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}` },
