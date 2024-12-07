@@ -5,6 +5,7 @@ import 'tailwindcss/tailwind.css';
 import Navbar from '@/components/Navbar';
 import { backendUrl } from '@/data/callServer';
 import { db } from '@/utils/db';
+import { fetchWithOfflineSupport, syncOfflineRequests } from '@/utils/syncRequests';
 
 const Dashboard = () => {
   const [vehicles, setVehicles] = useState<Vehicule[]>([]);
@@ -17,6 +18,14 @@ const Dashboard = () => {
   const { register, handleSubmit, reset } = useForm<Vehicule>();
   const { register: setupRegister, handleSubmit: handleSetupSubmit, reset: resetSetup } = useForm<Setup>();
 
+  useEffect(() => {
+    if (navigator.onLine) {
+      syncOfflineRequests();
+    }
+    window.addEventListener("online", syncOfflineRequests);
+    return () => window.removeEventListener("online", syncOfflineRequests);
+  }, []);
+
   // Add a new vehicle
   const addVehicle = async (data: Vehicule) => {
 
@@ -27,11 +36,13 @@ const Dashboard = () => {
     };
 
     try {
-    const response = await fetch(`http://${backendUrl}/api/user/vehicles`, {
+      
+    const token = localStorage.getItem('token');
+    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(bodyData),
     });
@@ -52,8 +63,6 @@ const Dashboard = () => {
     setShowVehicleForm(false);
     } catch (error) {
       console.error(error);
-      alert('Failed to add vehicle. Please try again.');
-      return;
     }
   };
 
@@ -68,7 +77,7 @@ const Dashboard = () => {
     };
 
     try {
-    const response = await fetch(`http://${backendUrl}/api/user/setup`, {
+    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,8 +106,6 @@ const Dashboard = () => {
     setShowSetupForm(false);
     } catch (error) {
       console.error(error);
-      alert('Failed to add setup. Please try again.');
-      return;
     }
   };
 
@@ -111,7 +118,7 @@ const Dashboard = () => {
     const confirmDelete = confirm(`Are you sure you want to delete ${setup.name}?`);
     if (confirmDelete) {
       try {
-      const response = await fetch(`http://${backendUrl}/api/user/setup/${setup.id}`, {
+      const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup/${setup.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +148,7 @@ const Dashboard = () => {
     const confirmDelete = confirm(`Are you sure you want to delete ${vehicle.name}?`);
     if (confirmDelete) {
       try {
-      const response = await fetch(`http://${backendUrl}/api/user/vehicles/${vehicle.id}`, {
+      const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles/${vehicle.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -161,15 +168,13 @@ const Dashboard = () => {
       await db.vehicles.delete(vehicle.id); // Remove from IndexedDB
       } catch (error) {
         console.error(error);
-        alert('Failed to delete vehicle. Please try again.');
-        return;
       }
     }
   };
 
   const getAllVehicules = async () => {
     try {
-    const response = await fetch(`http://${backendUrl}/api/user/vehicles/list`, {
+    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/vehicles/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -201,7 +206,7 @@ const Dashboard = () => {
 
   const getAllSetups = async () => {
     try {
-    const response = await fetch(`http://${backendUrl}/api/user/setup/list`, {
+    const response = await fetchWithOfflineSupport(`http://${backendUrl}/api/user/setup/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -300,26 +305,26 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // Load data from IndexedDB on component mount
     const fetchFromCache = async () => {
+      // Récupère les données depuis IndexedDB
       const cachedVehicles = await db.vehicles.toArray();
       const cachedSetups = await db.setups.toArray();
-
+  
       if (cachedVehicles.length > 0) setVehicles(cachedVehicles);
       if (cachedSetups.length > 0) setSetups(cachedSetups);
-
-      // Fetch from API and update both state and IndexedDB
-      getAllVehicules().then((data) => {
-        setVehicles(data);
-        db.vehicles.bulkPut(data); // Save to IndexedDB
-      });
-
-      getAllSetups().then((data) => {
-        setSetups(data);
-        db.setups.bulkPut(data); // Save to IndexedDB
-      });
+  
+      // Si online, synchronise les données depuis l'API
+      if (navigator.onLine) {
+        const apiVehicles = await getAllVehicules();
+        setVehicles(apiVehicles);
+        await db.vehicles.bulkPut(apiVehicles); // Met à jour IndexedDB
+  
+        const apiSetups = await getAllSetups();
+        setSetups(apiSetups);
+        await db.setups.bulkPut(apiSetups); // Met à jour IndexedDB
+      }
     };
-
+  
     fetchFromCache();
   }, []);
 
