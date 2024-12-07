@@ -1,4 +1,5 @@
 import { AppProps } from 'next/app';
+import Head from 'next/head';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +17,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <Head>
+        <title>RacingSetup</title>
+        <link rel="icon" href="/icons/racingsetup.png" />
+      </Head>
       <Component {...pageProps} />
       <ToastContainer />
     </>

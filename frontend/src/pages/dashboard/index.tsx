@@ -13,7 +13,8 @@ const Dashboard = () => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicule | null>(null);
   const [showVehicleForm, setShowVehicleForm] = useState(false);
   const [showSetupForm, setShowSetupForm] = useState(false);
-  const [vehiculeType, setVehiculeType] = useState<string>("");
+  const [vehiculeType, setVehiculeType] = useState<string>("kart");
+  const [isOpen, setIsOpen] = useState<{ [key: number]: boolean }>({});
 
   const { register, handleSubmit, reset } = useForm<Vehicule>();
   const { register: setupRegister, handleSubmit: handleSetupSubmit, reset: resetSetup } = useForm<Setup>();
@@ -58,7 +59,7 @@ const Dashboard = () => {
     const newVehicle = { id: responseData.vehicleId, name: data.name, description: data.description, createdAt: new Date() };
     setVehicles((prev) => [...prev, newVehicle]);
     await db.vehicles.put(newVehicle); // Save to IndexedDB
-    setVehiculeType('');
+    setVehiculeType('kart');
     reset();
     setShowVehicleForm(false);
     } catch (error) {
@@ -68,7 +69,6 @@ const Dashboard = () => {
 
   // Add a new setup
   const addSetup = async (data: Setup) => {
-
     const bodyData = {
       name: data.name,
       track: data.track,
@@ -111,6 +111,7 @@ const Dashboard = () => {
 
   // Filter setups by the selected vehicle
   const getSetupsByVehicle = (vehicleId: number) => {
+    getAllSetups();
     return setups.filter((setup) => setup.vehicle.id === vehicleId);
   };
 
@@ -148,6 +149,11 @@ const Dashboard = () => {
     const confirmDelete = confirm(`Are you sure you want to delete ${vehicle.name}?`);
     if (confirmDelete) {
       try {
+        for (const setup of setups) {
+          if (setup.vehicle.id === vehicle.id) {
+            await handleDeleteSetup(setup);
+          }
+        }
       const response = await fetchWithOfflineSupport(`${backendUrl}/api/user/vehicles/${vehicle.id}`, {
         method: 'DELETE',
         headers: {
@@ -215,7 +221,7 @@ const Dashboard = () => {
     });
 
     const data = await response.json();
-
+    console.log(data);
     if (!response.ok) {
       console.error(data);
       return [];
@@ -292,7 +298,6 @@ const Dashboard = () => {
           vehicle,
           values: [], // Add default or appropriate values here
         };
-
         setSetups((prev) => [...prev, newSetup]);
 
         alert("Setup and associated vehicle imported successfully!");
@@ -387,7 +392,7 @@ const Dashboard = () => {
                     required
                     onChange={(e) => setVehiculeType(e.target.value)}
                   >
-                    <option value="" disabled>
+                    <option value="kart" disabled>
                       Choose a type
                     </option>
                     <option value="kart">Kart</option>
@@ -500,10 +505,21 @@ const Dashboard = () => {
                         <p className="text-sm text-gray-500">
                           Created on {new Date(setup.createdAt).toLocaleDateString()}
                         </p>
+                        { isOpen[setup.id] && (
+                          <div>
+                            <p className="text-sm text-gray-500">Description:</p>
+                            <textarea className="text-sm text-gray-500 w-full rounded px-6 py-2" disabled>
+                              {setup.description}
+                            </textarea>
+                          </div>
+                        )}
                       </div>
                       <div className="flex space-x-2">
-                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                          Open
+                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" onClick={() => {
+                          setIsOpen({ ...isOpen, [setup.id]: !isOpen[setup.id] });
+                        }
+                        }>
+                          { isOpen[setup.id] ? 'Close' : 'View' }
                         </button>
                         <button
                           className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
