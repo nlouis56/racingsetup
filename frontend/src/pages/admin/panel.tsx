@@ -43,9 +43,7 @@ export default function AdminPanel() {
       racingNumber: updatedUser.racingNumber,
     };
 
-    console.log(bodyData);
-
-    const response = await fetch(`http://${backendUrl}/api/admin/users/${id}`, {
+    const response = await fetch(`${backendUrl}/api/admin/users/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}` },
