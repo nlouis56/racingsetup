@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout'
+import Link from 'next/link'
 
 export default function Home() {
   return (
@@ -11,12 +12,12 @@ export default function Home() {
             track changes, and share with your team!
           </p>
           <div className="mt-6">
-            <a
+            <Link
               href="/register"
               className="px-6 py-3 text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </div>
       </div>

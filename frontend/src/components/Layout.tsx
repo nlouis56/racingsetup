@@ -1,5 +1,4 @@
 // src/components/Layout.tsx
-import Link from 'next/link'
 import { ReactNode } from 'react'
 import { FaBars } from 'react-icons/fa'
 import 'tailwindcss/tailwind.css'
